@@ -64,6 +64,6 @@ class ManageCenter :
 
 
 app = QApplication([])
-SI.getfileWin = GetFile()
-SI.getfileWin.ui.show()
+#SI.getfileWin = GetFile()
+#SI.getfileWin.ui.show()
 app.exec_()
