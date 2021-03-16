@@ -1,9 +1,14 @@
 from PySide2.QtWidgets import QApplication, QMessageBox
 from PySide2.QtUiTools import QUiLoader
-
+from PySide2.QtCore import QFile, QIODevice
 import os
 
 from lib.share import SI
+
+import sys
+from PySide2.QtWidgets import QApplication, QLabel
+                                                     
+
 
 class GetFile :
 
@@ -13,8 +18,10 @@ class GetFile :
         # 从 UI 定义中动态 创建一个相应的窗口对象
         # 注意：里面的控件对象也成为窗口对象的属性了
         # 比如 self.ui.button , self.ui.textEdit
-        self.ui = QUiLoader().load('getfile.ui')
+        pwd = os.path.dirname(__file__)#获取当前文件路径
+        self.ui = QUiLoader().load(pwd + '/getfile.ui')
 
+        #按钮定义
         self.ui.btn_myFile.clicked.connect(self.open_mainwindow)
 
 
@@ -39,7 +46,8 @@ class GetFile :
 
 class MainWin :
     def __init__(self):
-        self.ui = QUiLoader().load('mainwin.ui')
+        pwd = os.path.dirname(__file__)
+        self.ui = QUiLoader().load(pwd + '/mainwin.ui')
         self.ui.btn_backFile.clicked.connect(self.open_getfile)
         self.ui.btn_manageCenter.clicked.connect(self.open_manageCenter)
 
@@ -58,12 +66,33 @@ class MainWin :
 
 class ManageCenter :
     def __init__(self):
-        self.ui = QUiLoader().load('managecenter.ui')
+        pwd = os.path.dirname(__file__)
+        self.ui = QUiLoader().load(pwd + '/managecenter.ui')
      #   self.ui.btn_backManWin.clicked.connect(self.open_mainwindow)
 
 
+if __name__ == "__main__":
+    app = QApplication([])
+    SI.getfileWin = GetFile()
+    SI.getfileWin.ui.show()
+    app.exec_()
 
-app = QApplication([])
-#SI.getfileWin = GetFile()
-#SI.getfileWin.ui.show()
-app.exec_()
+
+"""
+    app = QApplication(sys.argv)
+    ui_file_name = "E:/github codes/FileManager/FM/getfile.ui"
+    ui_file = QFile(ui_file_name)
+    if not ui_file.open(QIODevice.ReadOnly):
+        print("Cannot open {}: {}".format(ui_file_name, ui_file.errorString()))
+        sys.exit(-1)
+    loader = QUiLoader()
+    window = loader.load(ui_file)
+    ui_file.close()
+
+    app = QApplication(sys.argv)
+    label = QLabel("Hello World")
+    label.show()
+    sys.exit(app.exec_())
+    """
+
+
