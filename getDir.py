@@ -7,6 +7,5 @@ def getDir(directory):
             print('[+]' + dirName)
         else:
             print('[-]' + dirName)          #若不是则继续深入遍历
-
-
-            dvsdbsdfbwdfb
+            getDir(dirName)
+    
