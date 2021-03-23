@@ -26,10 +26,7 @@ class GetFile:
         # 即时改变
         # self.ui.edt_getAddress.textChanged.connect(self.edt_getAddress_text_changed)
         self.ui.edt_getAddress.returnPressed.connect(self.edt_getAddress_text_changed)
-        a = QTableWidgetItem('xx')
-        self.ui.wgt_table.setRowCount(10)#设置行，不然不显示插入的东西
-        self.ui.wgt_table.setItem(0,1,a)
-        #self.ui.wgt_table.viewport().update()
+
 
 
     def open_mainwindow(self):
@@ -42,8 +39,14 @@ class GetFile:
         fileNeedSerching = self.ui.edt_getAddress.text()
         self.allFiles = {}#初始化保存目录
         self.getDir(fileNeedSerching)
-        print(self.allFiles)
-        self.wgt_table_show()
+        self.ui.wgt_table.setRowCount(len(self.allFiles))
+        i = 0
+        for dirName, dirIsFile in self.allFiles.items():
+            element = QTableWidgetItem(dirName)
+            self.ui.wgt_table.setItem(i,0,element)
+            i = i + 1
+
+
     
     def wgt_table_show(self):
         a = QTableWidgetItem('xx3')
@@ -93,7 +96,13 @@ class ManageCenter:
     def __init__(self):
         self.pwd = os.path.dirname(__file__)
         self.ui = QUiLoader().load(self.pwd + '/managecenter.ui')
-     #   self.ui.btn_backManWin.clicked.connect(self.open_mainwindow)
+        self.ui.btn_backMainWin.clicked.connect(self.open_mainwindow)
+
+    def open_mainwindow(self):
+
+        SI.mainWin = MainWin()    # 实例化另外一个窗口
+        SI.mainWin.ui.show()      # 显示新窗口
+        self.ui.hide()            # 隐藏自己
 
 
 if __name__ == "__main__":
