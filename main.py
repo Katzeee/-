@@ -9,7 +9,8 @@ import sys
 from PySide2.QtWidgets import QApplication, QLabel
 import win32file
 import win32con
-
+import pandas as pd
+from toolkit import *
 
 class GetFile:
 
@@ -24,10 +25,8 @@ class GetFile:
 
         # 按钮定义
         self.ui.btn_myFile.clicked.connect(self.open_mainwindow)
-        # 即时改变
         self.ui.wgt_table.setRowCount(50)
         self.ui.edt_getAddress.returnPressed.connect(self.edt_getAddress_text_changed)
-        # self.ui.wgt_table.viewport().update()
 
     def open_mainwindow(self):
 
@@ -37,27 +36,23 @@ class GetFile:
 
     def edt_getAddress_text_changed(self):
         fileNeedSerching = self.ui.edt_getAddress.text()
-        self.allFiles = {}  # 初始化保存目录
-        self.allSizes = {}
-        self.allTimes = {}  # time.localtime(statinfo.st_ctime)
+        # time.localtime(statinfo.st_ctime)
+        self.allFileInfo = pd.DataFrame(columns = ['fileName', 'fileType', 'fileModifyDate', 'fileSize'])
+
         self.getDir(fileNeedSerching)
-        print(self.allFiles)
-        print(self.allSizes)
+
         self.wgt_table_show()
 
     def wgt_table_show(self):
-        i = 0
-        num = len(self.allFiles)
+        #print(self.allFileInfo)
+        num = len(self.allFileInfo.index)
         self.ui.wgt_table.setRowCount(num)
-        for dirName, dirIsFile in self.allFiles.items():
-            self.ui.wgt_table.setItem(i, 0, QTableWidgetItem(dirName))
+        for index, row in self.allFileInfo.iterrows():
+            self.ui.wgt_table.setItem(index, 0, QTableWidgetItem(row['fileName']))
+            self.ui.wgt_table.setItem(index, 1, QTableWidgetItem(row['fileType']))
+            self.ui.wgt_table.setItem(index, 2, QTableWidgetItem(row['fileModifyDate']))
+            self.ui.wgt_table.setItem(index, 3, QTableWidgetItem(f"{row['fileSize']}"))#此行不同的原因是什么呢？
 
-         #   if dirIsFile == 0:
-         #       self.ui.wgt_table.setItem(i, 2, QTableWidgetItem(dirIsFile))
-         #  else:
-         #      self.ui.wgt_table.setItem(i, 2, QTableWidgetItem(dirIsFile))
-            i = i + 1
-        self.ui.wgt_table.viewport().update()
 
     def getDir(self, directory):
         # self.allFiles = {}!不能定义在这，因为在else中会被初始化，用于保存目录文件
@@ -69,18 +64,22 @@ class GetFile:
             isHidden = fileFlag & win32con.FILE_ATTRIBUTE_HIDDEN
             isSystem = fileFlag & win32con.FILE_ATTRIBUTE_SYSTEM
             statInfo = os.stat(dirAddress)
+            '''
+            statInfo返回一个tuple，os.stat_result(st_mode=33206, st_ino=1125899906860840, st_dev=4199183826, st_nlink=1, 
+            st_uid=0, st_gid=0, st_size=80, st_atime=1616486743, st_mtime=1616485640, st_ctime=1616485640)
+            采取数字索引，size(6)代表其大小，单位为字节，mtime（8）代表其修改时间
+            '''
+            # 这里这么判断是有问题的，建议好好思考一下
             if os.path.isfile(dirAddress) and (not isHidden) and (not isSystem):  # 判断是否为隐藏、系统普通文件，若是则直接输出
-                self.allFiles.update({dirName: 1})  # 将其加入字典
-                self.allSizes.update({statInfo.st_size})
+                new = pd.DataFrame({'fileName' : dirName, 'fileType' : '', 'fileModifyDate' : stamp2string(statInfo[8]), 'fileSize' : statInfo[6]}, index=[1])
+                self.allFileInfo = self.allFileInfo.append(new,ignore_index=True)
 
             else:
-                self.allFiles.update({dirName: 0})
+                new = pd.DataFrame({'fileName' : dirName, 'fileType' : 'Folder', 'fileModifyDate' : stamp2string(statInfo[8]), 'fileSize' : statInfo[6]}, index=[1])
+                self.allFileInfo = self.allFileInfo.append(new,ignore_index=True)
                 self.getDir(dirAddress)
 
-
-#                # 若不是则继续深入遍历
-
-#       QMessageBox.about(self.ui)
+#测试地址：E:\github codes\FileManager\lib
 
 
 class MainWin:
@@ -114,7 +113,6 @@ class ManageCenter:
 
 
 if __name__ == "__main__":
-    # print(str("123"))
     app = QApplication(sys.argv)
     SI.getfileWin = GetFile()
     SI.getfileWin.ui.show()
