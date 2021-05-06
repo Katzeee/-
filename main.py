@@ -1,6 +1,7 @@
-from PySide2.QtWidgets import QApplication, QMessageBox, QTableWidgetItem  # 引用QTableWidgetItem是为了往表格里面放东西
+from PySide2.QtWidgets import QApplication, QMessageBox, QTableWidgetItem, QFileDialog  # 引用QTableWidgetItem是为了往表格里面放东西
 from PySide2.QtUiTools import QUiLoader
-from PySide2.QtCore import QFile, QIODevice
+from PySide2.QtCore import QFile, QIODevice, QUrl
+from PySide2.QtGui import QDesktopServices
 import os
 from os import stat
 from lib.share import SI
@@ -30,12 +31,18 @@ class GetFile:
 
     def open_mainwindow(self):
 
+
         SI.mainWin = MainWin()  # 实例化另外一个窗口
         SI.mainWin.ui.show()  # 显示新窗口
         self.ui.hide()  # 隐藏自己
 
     def edt_getAddress_text_changed(self):
-        fileNeedSerching = self.ui.edt_getAddress.text()
+        #QDesktopServices.openUrl(QUrl("C:/", QUrl.TolerantMode))
+        #QFileDialog.getOpenFileName(dir="C:/")
+        fileNeedSerching = QFileDialog.getExistingDirectory(dir="C:/")
+
+
+        #fileNeedSerching = self.ui.edt_getAddress.text()
         # time.localtime(statinfo.st_ctime)
         self.allFileInfo = pd.DataFrame(columns = ['fileName', 'fileType', 'fileModifyDate', 'fileSize'])
 
