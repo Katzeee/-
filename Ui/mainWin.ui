@@ -27,6 +27,12 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QTreeWidget" name="treeWidget">
+          <property name="minimumSize">
+           <size>
+            <width>150</width>
+            <height>0</height>
+           </size>
+          </property>
           <column>
            <property name="text">
             <string>功能区域</string>
@@ -115,7 +121,7 @@
      <x>0</x>
      <y>0</y>
      <width>1079</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="File">

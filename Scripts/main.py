@@ -41,7 +41,7 @@ class MainWin(QMainWindow):
         subWindow.close()
 
         #初始化类参数
-        self.outputNumber = {'SearchDirWin' : 1, 'SearchNameWin' : 1, 'SearchTypeWin' : 1, 'SearchDiffWin' : 1} #输出文件编号
+        self.outputNumber = {'SearchDirWin' : 1, 'SearchNameWin' : 1, 'SearchTypeWin' : 1, 'SearchDiffWin' : 1, 'SearchDupWin' : 1} #输出文件编号
         self.allThread = [] #所有线程
          
         # 绑定Menubar
@@ -87,6 +87,10 @@ class MainWin(QMainWindow):
     def menuSearchNull(self):
         print("Search Null")
     def menuSearchDup(self):
+        t = SearchDupSubWindow()
+        self.allThread.append(t)
+        t.daemon = True
+        t.start()
         print("Search Dup")
 
 

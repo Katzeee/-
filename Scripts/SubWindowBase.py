@@ -16,6 +16,7 @@ import random
 import docx
 import difflib
 import codecs
+import hashlib
 
 
 
@@ -500,7 +501,7 @@ class SearchDiffSubWindow(SubWindowBase):
         self.ui = QUiLoader().load(self.pwd + '/Ui/searchDiffWin.ui')
         #self.ui.textEditCompare.setParent(self.ui)
         self.setWidget(self.ui)
-        self.setWindowTitle("文档重复查找")
+        self.setWindowTitle("Word文档重复查找")
         self.windowType = 'SearchDiffWin'
         
         self.ui.textEditCompare.setFontPointSize(9)
@@ -514,7 +515,7 @@ class SearchDiffSubWindow(SubWindowBase):
         # 参数初始化
         self.fileName1 = ('',)
         self.fileName2 = ('',)
-        self.directory = ''
+        #self.directory = ''
         self.dirQueue = Queue()
         self.qLock = threading.Lock()
         self.stopSignal = True
@@ -522,12 +523,23 @@ class SearchDiffSubWindow(SubWindowBase):
 
     def ButtonChooseFile1Clicked(self):
         self.fileName1 = QFileDialog.getOpenFileName(dir=self.pwd, filter='All Files (*) ;; doc(*.doc, *.docx)', selectedFilter='doc(*.doc, *.docx)')
+        if self.fileName1[1] != 'doc(*.doc, *.docx)':
+            self.ui.labelState.setText("请选择正确的文件类型!")
+            self.fileName1 = ('',)
+            return
         self.ui.lineEditFile1.setText(self.fileName1[0])
+        self.ui.labelState.setText("空闲")
 
 
     def ButtonChooseFile2Clicked(self):
         self.fileName2 = QFileDialog.getOpenFileName(dir=self.pwd, filter='All Files (*) ;; doc(*.doc, *.docx)', selectedFilter='doc(*.doc, *.docx)')
+        if self.fileName2[1] != 'doc(*.doc, *.docx)':
+            self.ui.labelState.setText("请选择正确的文件类型!")
+            self.fileName2 = ('',)
+            return
         self.ui.lineEditFile2.setText(self.fileName2[0])
+        self.ui.labelState.setText("空闲")
+
 
 
     def ButtonSearchClicked(self):
@@ -587,5 +599,137 @@ class SearchDiffSubWindow(SubWindowBase):
                 self.FileCompare()
                 self.ui.labelState.setText("对比完成")
                 self.ui.buttonSearch.setText('开始搜索')
+                self.stopSignal = True
+
+class SearchDupSubWindow(SubWindowBase):
+    def __init__(self):
+        super().__init__()
+        self.pwd = os.path.abspath('.')
+        self.ui = QUiLoader().load(self.pwd + '/Ui/searchDupWin.ui')
+        self.setWidget(self.ui)
+        self.setWindowTitle("重复文件查找")
+        self.windowType = 'SearchDupWin'
+        
+
+        
+        # 按键绑定
+        self.ui.buttonChooseDir1.clicked.connect(self.ButtonChooseDir1Clicked)
+        self.ui.buttonChooseDir2.clicked.connect(self.ButtonChooseDir2Clicked)
+        self.ui.buttonSearch.clicked.connect(self.ButtonSearchClicked)
+        # self.ui.tableMyFile.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+
+        # 参数初始化
+        self.dirName1 = ''
+        self.dirName2 = ''
+        self.dirDict = {}
+        self.dirQueue = Queue()
+        self.qLock = threading.Lock()
+        self.stopSignal = True
+
+
+    def ButtonChooseDir1Clicked(self):
+        self.dirName1 = QFileDialog.getExistingDirectory(dir=self.pwd)
+        self.ui.lineEditFile1.setText(self.dirName1)
+        self.ui.labelState.setText("空闲")
+
+
+    def ButtonChooseDir2Clicked(self):
+        self.dirName2 = QFileDialog.getExistingDirectory(dir=self.pwd)
+        self.ui.lineEditFile2.setText(self.dirName2)
+        self.ui.labelState.setText("空闲")
+
+
+
+    def ButtonSearchClicked(self):
+        if self.ui.buttonSearch.text() == '开始搜索':
+            if self.dirName1 == '' or self.dirName2 == '':
+                self.ui.labelState.setText("文件尚未选择,请选择文件!")
+                return
+            else:
+                self.dirDict = {}
+                #self.ui.tableFileCompare.clear()
+                self.stopSignal = False
+                self.ui.buttonSearch.setText('停止搜索')
+        else:
+            self.ui.buttonSearch.setText('开始搜索')
+            self.stopSignal = True
+
+    def FileWalk(self, _dir):
+        return (os.path.join(root,fn) for root,dirs,files in os.walk(_dir) for fn in files) #迭代路径
+
+    def GetMd5(self, _fileName, _blockSize=65536):
+        hash = hashlib.md5()
+        with open(_fileName, "rb") as f:
+            for block in iter(lambda: f.read(_blockSize), b""):
+                hash.update(block)
+        return hash.hexdigest()
+
+    def FileCompare(self):
+        for file in self.FileWalk(self.dirName1):
+            if self.stopSignal is False:
+                file = file.replace('\\', '/')
+                try:
+                    md5 = self.GetMd5(file)
+                except:
+                    continue
+                else:
+                    if md5 not in self.dirDict.keys():
+                        self.dirDict[md5] = [file]
+                    else:
+                        self.dirDict[md5].append(file)
+            else:
+                return
+                    
+        for file in self.FileWalk(self.dirName2):
+            if self.stopSignal is False:
+                file = file.replace('\\', '/')
+                try:
+                    md5 = self.GetMd5(file)
+                except:
+                    continue
+                else:
+                    if md5 not in self.dirDict.keys():
+                        self.dirDict[md5] = [file]
+                    else:
+                        self.dirDict[md5].append(file)
+            else:
+                return
+
+
+
+    def TableFileCompareShow(self):
+        for key in list(self.dirDict.keys()):
+            if len(self.dirDict[key]) == 1:
+                self.dirDict.pop(key)
+            else:
+                for file in self.dirDict[key]:
+                    self.ui.listFileCompare.addItem(QListWidgetItem(file))
+                self.ui.listFileCompare.addItem('')
+    
+
+
+    def Output(self, _outFileNum):
+        outputList = QFileDialog.getSaveFileName(dir=f"Output{_outFileNum}.txt", filter='All Files (*) ;; txt(*.txt)', selectedFilter='txt(*.txt)')
+        if outputList[0] == '': #未选择
+            return
+        with open(outputList[0], 'w') as f:
+            for key in self.dirDict.keys():
+                for file in self.dirDict[key]:
+                    print(file, file=f)
+                print('', file=f)
+        
+        return outputList[0].split('/')[-1] #返回文件名
+    
+    def run(self):
+        while self.thIsOn:
+            if self.stopSignal:
+                time.sleep(1)
+            else:
+                self.ui.labelState.setText("对比中...")
+                self.FileCompare()
+                self.TableFileCompareShow()
+                self.ui.labelState.setText("对比完成")
+                self.ui.buttonSearch.setText('开始搜索')
+
                 self.stopSignal = True
 
