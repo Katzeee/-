@@ -142,10 +142,11 @@ class MainWin(QMainWindow):
                 self.outputNumber[winType] += 1
          
         
-
-
     def menuHelp(self):
-        print("Help")
+        t = InfoSubWindow()
+        self.allThread.append(t)
+        t.daemon = True
+        t.start()
 
 
     def menuExit(self):

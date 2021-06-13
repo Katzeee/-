@@ -766,3 +766,42 @@ class SearchDupSubWindow(SubWindowBase):
 
                 self.stopSignal = True
 
+
+# class InfoSubWindow(SubWindowBase):
+#     def __init__(self):
+#         super().__init__()
+#         self.pwd = os.path.abspath('.')
+#         self.ui = QUiLoader().load(self.pwd + '.\\Ui\\infoWin.ui')
+#         self.setWidget(self.ui)
+#         self.setWindowTitle("用户说明")
+#         self.windowType = 'InfoWin'
+
+#         cursor = self.ui.textEditInfo.textCursor()
+
+#         imgFormat = QTextImageFormat()
+#         imgFormat.setWidth(800)
+
+#         imgFormat.setName(self.pwd + '\\images\\info1.png')
+#         cursor.insertImage(imgFormat)
+#         imgFormat.setName(self.pwd + '\\images\\info2.png')
+#         cursor.insertImage(imgFormat)
+
+class InfoSubWindow(threading.Thread):
+    def __init__(self):
+        super().__init__()
+        self.pwd = os.path.abspath('.')
+        self.ui = QUiLoader().load(self.pwd + '.\\Ui\\infoWin.ui')
+        self.ui.show()
+        #self.setWindowTitle("用户说明")
+
+        cursor = self.ui.textEditInfo.textCursor()
+
+        imgFormat = QTextImageFormat()
+        imgFormat.setWidth(800)
+
+        imgFormat.setName(self.pwd + '\\images\\info1.png')
+        cursor.insertImage(imgFormat)
+        imgFormat.setName(self.pwd + '\\images\\info2.png')
+        cursor.insertImage(imgFormat)
+
+        #cursor.insertText('123')
