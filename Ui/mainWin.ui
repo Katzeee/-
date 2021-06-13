@@ -16,8 +16,21 @@
     <verstretch>2</verstretch>
    </sizepolicy>
   </property>
+  <property name="font">
+   <font>
+    <family>Microsoft YaHei</family>
+    <pointsize>9</pointsize>
+   </font>
+  </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>文件管理系统</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../images/file.png</normaloff>../images/file.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -29,9 +42,15 @@
          <widget class="QTreeWidget" name="treeWidget">
           <property name="minimumSize">
            <size>
-            <width>150</width>
+            <width>200</width>
             <height>0</height>
            </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Microsoft YaHei</family>
+            <pointsize>9</pointsize>
+           </font>
           </property>
           <column>
            <property name="text">
@@ -40,13 +59,8 @@
           </column>
           <item>
            <property name="text">
-            <string>查找重复文件</string>
+            <string>文件遍历模块</string>
            </property>
-           <item>
-            <property name="text">
-             <string>搜索空文件</string>
-            </property>
-           </item>
            <item>
             <property name="text">
              <string>搜索重复文件</string>
@@ -64,34 +78,44 @@
            </property>
            <item>
             <property name="text">
-             <string>导出为txt格式</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>导出为xlsm格式</string>
+             <string>导出</string>
             </property>
            </item>
           </item>
           <item>
            <property name="text">
-            <string>查找指定文件</string>
+            <string>文件查找模块</string>
            </property>
            <item>
             <property name="text">
-             <string>模糊搜索</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>精确搜索</string>
+             <string>关键词查找</string>
             </property>
            </item>
           </item>
          </widget>
         </item>
         <item>
-         <widget class="QMdiArea" name="mdiArea"/>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QMdiArea" name="mdiArea">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
         </item>
         <item>
          <spacer name="horizontalSpacer">
@@ -120,8 +144,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1079</width>
-     <height>22</height>
+     <width>570</width>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="File">
@@ -129,6 +153,12 @@
      <string>文件</string>
     </property>
     <widget class="QMenu" name="Add">
+     <property name="font">
+      <font>
+       <family>Microsoft JhengHei</family>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
      <property name="title">
       <string>添加</string>
      </property>
@@ -142,7 +172,6 @@
     <property name="title">
      <string>查找</string>
     </property>
-    <addaction name="searchNull"/>
     <addaction name="searchDup"/>
     <addaction name="searchDiff"/>
     <addaction name="searchFile"/>
@@ -208,6 +237,12 @@
    <property name="text">
     <string>重复文件</string>
    </property>
+   <property name="font">
+    <font>
+     <family>Microsoft YaHei</family>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionjingqu">
    <property name="text">
@@ -227,15 +262,33 @@
    <property name="text">
     <string>文件列表</string>
    </property>
+   <property name="font">
+    <font>
+     <family>Microsoft YaHei</family>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
   </action>
   <action name="searchNull">
    <property name="text">
     <string>空文件</string>
    </property>
+   <property name="font">
+    <font>
+     <family>Microsoft YaHei</family>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
   </action>
   <action name="searchDiff">
    <property name="text">
     <string>重复内容比对</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Microsoft YaHei</family>
+     <pointsize>9</pointsize>
+    </font>
    </property>
   </action>
   <action name="actionwenjian">
@@ -274,6 +327,12 @@
    <property name="text">
     <string>新建项目</string>
    </property>
+   <property name="font">
+    <font>
+     <family>Microsoft YaHei</family>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
   </action>
   <action name="help">
    <property name="icon">
@@ -282,6 +341,12 @@
    </property>
    <property name="text">
     <string>帮助</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Microsoft YaHei</family>
+     <pointsize>9</pointsize>
+    </font>
    </property>
   </action>
   <action name="exit">
@@ -292,6 +357,12 @@
    <property name="text">
     <string>退出</string>
    </property>
+   <property name="font">
+    <font>
+     <family>Microsoft YaHei</family>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
   </action>
   <action name="searchFile">
    <property name="icon">
@@ -300,6 +371,12 @@
    </property>
    <property name="text">
     <string>指定文件</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Microsoft YaHei</family>
+     <pointsize>9</pointsize>
+    </font>
    </property>
   </action>
  </widget>
