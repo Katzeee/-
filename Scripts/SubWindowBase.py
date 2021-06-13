@@ -57,8 +57,6 @@ class SubWindowBase(QMdiSubWindow,threading.Thread):
 
 
 
-    
-
 
 class SearchDirSubWindow(SubWindowBase):
 
@@ -66,9 +64,9 @@ class SearchDirSubWindow(SubWindowBase):
         
         super().__init__()
         self.pwd = os.path.abspath('.')
-        self.ui = QUiLoader().load(self.pwd + '/Ui/searchDirWin.ui')
+        self.ui = QUiLoader().load(self.pwd + '.\\Ui\\searchDirWin.ui')
         self.setWidget(self.ui)
-        self.setWindowTitle("目录查找")
+        self.setWindowTitle("文件遍历")
         self.windowType = 'SearchDirWin'
 
         # 按键绑定
@@ -308,9 +306,9 @@ class SearchNameSubWindow(SubWindowBase):
         
         super().__init__()
         self.pwd = os.path.abspath('.')
-        self.ui = QUiLoader().load(self.pwd + '/Ui/searchNameWin.ui')
+        self.ui = QUiLoader().load(self.pwd + '.\\Ui\\searchNameWin.ui')
         self.setWidget(self.ui)
-        self.setWindowTitle("名称查找")
+        self.setWindowTitle("模糊查找")
         self.windowType = 'SearchNameWin'
 
         # 按键绑定
@@ -330,6 +328,8 @@ class SearchNameSubWindow(SubWindowBase):
 
     def RightClickMenuInit(self):
         self.ui.listWidgetAllFile.setContextMenuPolicy(Qt.CustomContextMenu)
+        # 必须将ContextMenuPolicy设置为Qt.CustomContextMenu
+        # 否则无法使用customContextMenuRequested信号
         self.ui.Menu = QMenu(self.ui.listWidgetAllFile)
         self.ui.Menu.addAction(u'打开文件').triggered.connect(self.RightClickMenuOpenFile)
         self.ui.Menu.addAction(u'打开文件夹').triggered.connect(self.RightClickMenuOpenFilePath)
@@ -338,7 +338,7 @@ class SearchNameSubWindow(SubWindowBase):
 
     def RightClickMenuClicked(self, _QPoint):
         self.itemSelected = self.ui.listWidgetAllFile.itemAt(_QPoint)
-        if self.itemSelected is None:
+        if self.itemSelected is None: 
             return
         self.ui.Menu.exec_(QCursor.pos())
 
@@ -476,15 +476,11 @@ class SearchTypeSubWindow(SubWindowBase):
     def __init__(self):
         super().__init__()
         self.pwd = os.path.abspath('.')
-        self.ui = QUiLoader().load(self.pwd + '/Ui/searchTypeWin.ui')
+        self.ui = QUiLoader().load(self.pwd + '.\\Ui\\searchTypeWin.ui')
         self.setWidget(self.ui)
-        self.setWindowTitle("名称查找")
+        self.setWindowTitle("精确查找")
         self.windowType = 'SearchTypeWin'
 
-        # 按键绑定
-        # self.ui.buttonSearch.clicked.connect(self.ButtonSearchClicked)
-        # self.ui.buttonChooseDir.clicked.connect(self.ButtonChooseDirClicked)
-        # self.ui.tableMyFile.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
         # 参数初始化
         self.fileSearchName = ''
@@ -498,10 +494,10 @@ class SearchDiffSubWindow(SubWindowBase):
     def __init__(self):
         super().__init__()
         self.pwd = os.path.abspath('.')
-        self.ui = QUiLoader().load(self.pwd + '/Ui/searchDiffWin.ui')
+        self.ui = QUiLoader().load(self.pwd + '.\\Ui\\searchDiffWin.ui')
         #self.ui.textEditCompare.setParent(self.ui)
         self.setWidget(self.ui)
-        self.setWindowTitle("Word文档重复查找")
+        self.setWindowTitle("文档重复比对")
         self.windowType = 'SearchDiffWin'
         
         self.ui.textEditCompare.setFontPointSize(9)
@@ -605,7 +601,7 @@ class SearchDupSubWindow(SubWindowBase):
     def __init__(self):
         super().__init__()
         self.pwd = os.path.abspath('.')
-        self.ui = QUiLoader().load(self.pwd + '/Ui/searchDupWin.ui')
+        self.ui = QUiLoader().load(self.pwd + '.\\Ui\\searchDupWin.ui')
         self.setWidget(self.ui)
         self.setWindowTitle("重复文件查找")
         self.windowType = 'SearchDupWin'
