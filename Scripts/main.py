@@ -54,6 +54,28 @@ class MainWin(QMainWindow):
         self.ui.help.triggered.connect(self.menuHelp)
         self.ui.exit.triggered.connect(self.menuExit)
 
+        #绑定TreeWidget
+        self.ui.treeWidget.itemClicked.connect(self.TreeWidgetClicked)
+    
+    def TreeWidgetClicked(self, item, n):
+        selectedParent = item.parent()
+        if selectedParent is None:
+            return
+        parentNumber = self.ui.treeWidget.indexOfTopLevelItem(selectedParent)
+        childNumber = selectedParent.indexOfChild(item)
+        # print(parentNumber,childNumber)
+        if parentNumber == 0:
+            if childNumber == 0:
+                self.menuSearchDup()
+            if childNumber == 1:
+                self.menuSearchDiff()
+        elif parentNumber == 1:
+            if childNumber == 0:
+                self.menuOutList()
+        elif parentNumber == 2:
+            if childNumber == 0:
+                self.menuSearchFile()
+
 
 
     def closeEvent(self, event):
