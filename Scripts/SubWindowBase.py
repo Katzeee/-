@@ -352,14 +352,21 @@ class SearchNameSubWindow(SubWindowBase):
         os.startfile(text.strip(text.split('/')[-1]))
 
     def RightClickMenuDeleteFile(self):
-        print("RightClickMenuDeleteFile")
+        text = self.itemSelected.text()
+        try:
+            os.remove(text)
+        except Exception as e:
+            self.ui.labelState.setText('删除失败')
+        else:
+            self.ui.labelState.setText(f"删除成功")
+            self.ui.listWidgetAllFile.takeItem(self.ui.listWidgetAllFile.row(self.itemSelected))
 
 
     def ButtonSearchClicked(self):
         if self.ui.buttonSearch.text() == '开始搜索':
             self.fileSearchName = self.ui.lineEditFileKeyName.text()
             if self.fileSearchName == '' or self.directory == '':
-                self.ui.labelState.setText(f"Warning！请输入文件名或路径！")
+                self.ui.labelState.setText(f"警告！请输入文件名或路径！")
                 #QMessageBox.information(self, "Warning", "请输入文件名或路径")
                 return
         elif self.ui.buttonSearch.text() == '停止搜索':
@@ -614,6 +621,8 @@ class SearchDupSubWindow(SubWindowBase):
         self.ui.buttonSearch.clicked.connect(self.ButtonSearchClicked)
         # self.ui.tableMyFile.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
+        self.RightClickMenuInit()
+
         # 参数初始化
         self.dirName1 = ''
         self.dirName2 = ''
@@ -621,6 +630,31 @@ class SearchDupSubWindow(SubWindowBase):
         self.dirQueue = Queue()
         self.qLock = threading.Lock()
         self.stopSignal = True
+
+
+    def RightClickMenuInit(self):
+        self.ui.listFileCompare.setContextMenuPolicy(Qt.CustomContextMenu)
+        # 必须将ContextMenuPolicy设置为Qt.CustomContextMenu
+        # 否则无法使用customContextMenuRequested信号
+        self.ui.Menu = QMenu(self.ui.listFileCompare)
+        self.ui.Menu.addAction(u'删除文件').triggered.connect(self.RightClickMenuDeleteFile)
+        self.ui.listFileCompare.customContextMenuRequested[QPoint].connect(self.RightClickMenuClicked)
+
+    def RightClickMenuClicked(self, _QPoint):
+        self.itemSelected = self.ui.listFileCompare.itemAt(_QPoint)
+        if self.itemSelected is None: 
+            return
+        self.ui.Menu.exec_(QCursor.pos())
+
+    def RightClickMenuDeleteFile(self):
+        text = self.itemSelected.text()
+        try:
+            os.remove(text)
+        except Exception as e:
+            self.ui.labelState.setText('删除失败')
+        else:
+            self.ui.labelState.setText(f"删除成功")
+            self.ui.listFileCompare.takeItem(self.ui.listFileCompare.row(self.itemSelected))
 
 
     def ButtonChooseDir1Clicked(self):
@@ -695,10 +729,13 @@ class SearchDupSubWindow(SubWindowBase):
 
     def TableFileCompareShow(self):
         for key in list(self.dirDict.keys()):
-            if len(self.dirDict[key]) == 1:
+            if len(self.dirDict[key]) == 1: #无重复文件
                 self.dirDict.pop(key)
-            else:
-                for file in self.dirDict[key]:
+            else: #有重复文件
+                fileDirSet = set(self.dirDict[key])# 同路径文件不算重复文件
+                if len(fileDirSet) == 1: #判断变为集合后的路径是否只剩一个
+                    continue
+                for file in fileDirSet: 
                     self.ui.listFileCompare.addItem(QListWidgetItem(file))
                 self.ui.listFileCompare.addItem('')
     
