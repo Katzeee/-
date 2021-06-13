@@ -12,8 +12,6 @@ from SubWindowBase import *
 
 
 
-
-
 class MainWin(QMainWindow):
 
 # region singlaton
@@ -31,7 +29,7 @@ class MainWin(QMainWindow):
     def __init__(self):
         super().__init__()
         self.pwd = os.path.abspath('.')  # 获取当前文件路径
-        self.ui = QUiLoader().load(self.pwd + '/Ui/mainWin.ui')  # 确定与工作路径一致
+        self.ui = QUiLoader().load(self.pwd + '.\\Ui\\mainWin.ui')  # 确定与工作路径一致
         QApplication.setStyle(QStyleFactory.create('Fusion'))
         
 
@@ -46,8 +44,8 @@ class MainWin(QMainWindow):
          
         # 绑定Menubar
         self.ui.newProject.triggered.connect(self.menuNewProject)
-        self.ui.addFile.triggered.connect(self.menuAddFile)
-        self.ui.addFolder.triggered.connect(self.menuAddFolder)
+        self.ui.addFile.triggered.connect(self.menuSearchDiff)
+        self.ui.addFolder.triggered.connect(self.menuSearchDup)
         self.ui.searchNull.triggered.connect(self.menuSearchNull)
         self.ui.searchDup.triggered.connect(self.menuSearchDup)
         self.ui.searchDiff.triggered.connect(self.menuSearchDiff)
@@ -71,11 +69,11 @@ class MainWin(QMainWindow):
 
 
     def menuAddFile(self):
-        t = SearchNameSubWindow()
+        t = SearchDiffSubWindow()
         self.allThread.append(t)
         t.daemon = True
         t.start()
-        print("add file")
+        print("Search Diff")
 
     def menuAddFolder(self):
         t = SearchTypeSubWindow()
@@ -102,7 +100,11 @@ class MainWin(QMainWindow):
         print("Search Diff")
 
     def menuSearchFile(self):
-        print("Search File")
+        t = SearchNameSubWindow()
+        self.allThread.append(t)
+        t.daemon = True
+        t.start()
+        print("Search file")
 
     def menuOutList(self):
         print("Out List")
@@ -118,11 +120,12 @@ class MainWin(QMainWindow):
                 self.outputNumber[winType] += 1
          
         
-    
 
 
     def menuHelp(self):
         print("Help")
+
+
     def menuExit(self):
         self.ui.close()
 
